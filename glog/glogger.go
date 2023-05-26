@@ -1,10 +1,5 @@
 package glog
 
-/*
-	All methods and APIs of the log class.
-	Add By Aceld(刘丹冰) 2019-4-23
-*/
-
 import (
 	"bytes"
 	"fmt"
@@ -52,7 +47,7 @@ var levels = []string{
 	"[FATAL]",
 }
 
-type ZinxLoggerCore struct {
+type GLoggerCore struct {
 	// to ensure thread-safe when multiple goroutines read and write files to prevent mixed-up content, achieving concurrency safety
 	// (确保多协程读写文件，防止文件内容混乱，做到协程安全)
 	mu sync.Mutex
@@ -80,31 +75,24 @@ type ZinxLoggerCore struct {
 	onLogHook func([]byte)
 }
 
-/*
-NewZinxLog Create a new log
-
-out: The file io for standard output
-prefix: The prefix of the log
-flag: The flag of the log header information
-*/
-func NewZinxLog(prefix string, flag int) *ZinxLoggerCore {
+func NewGLog(prefix string, flag int) *GLoggerCore {
 
 	// By default, debug is turned on, the depth is 2, and the ZinxLogger object calling the log print method can call up to two levels to reach the output function
 	// (默认 debug打开， calledDepth深度为2,ZinxLogger对象调用日志打印方法最多调用两层到达output函数)
-	zlog := &ZinxLoggerCore{prefix: prefix, flag: flag, isolationLevel: 0, calldDepth: 2}
+	zlog := &GLoggerCore{prefix: prefix, flag: flag, isolationLevel: 0, calldDepth: 2}
 
 	// Set the log object's resource cleanup destructor method (this is not necessary, as go's Gc will automatically collect, but for the sake of neatness)
 	// (设置log对象 回收资源 析构方法(不设置也可以，go的Gc会自动回收，强迫症没办法))
-	runtime.SetFinalizer(zlog, CleanZinxLog)
+	runtime.SetFinalizer(zlog, CleanGLog)
 	return zlog
 }
 
-// CleanZinxLog Recycle log resources
-func CleanZinxLog(log *ZinxLoggerCore) {
+// CleanGLog Recycle log resources
+func CleanGLog(log *GLoggerCore) {
 	log.closeFile()
 }
 
-func (log *ZinxLoggerCore) SetLogHook(f func([]byte)) {
+func (log *GLoggerCore) SetLogHook(f func([]byte)) {
 	log.onLogHook = f
 }
 
@@ -116,7 +104,7 @@ file: The file name of the source code invoking the log function.
 line: The line number of the source code invoking the log function.
 level: The log level of the current log entry.
 */
-func (log *ZinxLoggerCore) formatHeader(t time.Time, file string, line int, level int) {
+func (log *GLoggerCore) formatHeader(t time.Time, file string, line int, level int) {
 	var buf *bytes.Buffer = &log.buf
 	// If the current prefix string is not empty, write the prefix first.
 	if log.prefix != "" {
@@ -182,7 +170,7 @@ func (log *ZinxLoggerCore) formatHeader(t time.Time, file string, line int, leve
 }
 
 // OutPut outputs log file, the original method
-func (log *ZinxLoggerCore) OutPut(level int, s string) error {
+func (log *GLoggerCore) OutPut(level int, s string) error {
 	now := time.Now() // get current time
 	var file string   // file name of the current caller of the log interface
 	var line int      // line number of the executed code
@@ -227,7 +215,7 @@ func (log *ZinxLoggerCore) OutPut(level int, s string) error {
 	return err
 }
 
-func (log *ZinxLoggerCore) verifyLogIsolation(logLevel int) bool {
+func (log *GLoggerCore) verifyLogIsolation(logLevel int) bool {
 	if log.isolationLevel > logLevel {
 		return true
 	} else {
@@ -235,63 +223,63 @@ func (log *ZinxLoggerCore) verifyLogIsolation(logLevel int) bool {
 	}
 }
 
-func (log *ZinxLoggerCore) Debugf(format string, v ...interface{}) {
+func (log *GLoggerCore) Debugf(format string, v ...interface{}) {
 	if log.verifyLogIsolation(LogDebug) {
 		return
 	}
 	_ = log.OutPut(LogDebug, fmt.Sprintf(format, v...))
 }
 
-func (log *ZinxLoggerCore) Debug(v ...interface{}) {
+func (log *GLoggerCore) Debug(v ...interface{}) {
 	if log.verifyLogIsolation(LogDebug) {
 		return
 	}
 	_ = log.OutPut(LogDebug, fmt.Sprintln(v...))
 }
 
-func (log *ZinxLoggerCore) Infof(format string, v ...interface{}) {
+func (log *GLoggerCore) Infof(format string, v ...interface{}) {
 	if log.verifyLogIsolation(LogInfo) {
 		return
 	}
 	_ = log.OutPut(LogInfo, fmt.Sprintf(format, v...))
 }
 
-func (log *ZinxLoggerCore) Info(v ...interface{}) {
+func (log *GLoggerCore) Info(v ...interface{}) {
 	if log.verifyLogIsolation(LogInfo) {
 		return
 	}
 	_ = log.OutPut(LogInfo, fmt.Sprintln(v...))
 }
 
-func (log *ZinxLoggerCore) Warnf(format string, v ...interface{}) {
+func (log *GLoggerCore) Warnf(format string, v ...interface{}) {
 	if log.verifyLogIsolation(LogWarn) {
 		return
 	}
 	_ = log.OutPut(LogWarn, fmt.Sprintf(format, v...))
 }
 
-func (log *ZinxLoggerCore) Warn(v ...interface{}) {
+func (log *GLoggerCore) Warn(v ...interface{}) {
 	if log.verifyLogIsolation(LogWarn) {
 		return
 	}
 	_ = log.OutPut(LogWarn, fmt.Sprintln(v...))
 }
 
-func (log *ZinxLoggerCore) Errorf(format string, v ...interface{}) {
+func (log *GLoggerCore) Errorf(format string, v ...interface{}) {
 	if log.verifyLogIsolation(LogError) {
 		return
 	}
 	_ = log.OutPut(LogError, fmt.Sprintf(format, v...))
 }
 
-func (log *ZinxLoggerCore) Error(v ...interface{}) {
+func (log *GLoggerCore) Error(v ...interface{}) {
 	if log.verifyLogIsolation(LogError) {
 		return
 	}
 	_ = log.OutPut(LogError, fmt.Sprintln(v...))
 }
 
-func (log *ZinxLoggerCore) Fatalf(format string, v ...interface{}) {
+func (log *GLoggerCore) Fatalf(format string, v ...interface{}) {
 	if log.verifyLogIsolation(LogFatal) {
 		return
 	}
@@ -299,7 +287,7 @@ func (log *ZinxLoggerCore) Fatalf(format string, v ...interface{}) {
 	os.Exit(1)
 }
 
-func (log *ZinxLoggerCore) Fatal(v ...interface{}) {
+func (log *GLoggerCore) Fatal(v ...interface{}) {
 	if log.verifyLogIsolation(LogFatal) {
 		return
 	}
@@ -307,7 +295,7 @@ func (log *ZinxLoggerCore) Fatal(v ...interface{}) {
 	os.Exit(1)
 }
 
-func (log *ZinxLoggerCore) Panicf(format string, v ...interface{}) {
+func (log *GLoggerCore) Panicf(format string, v ...interface{}) {
 	if log.verifyLogIsolation(LogPanic) {
 		return
 	}
@@ -316,7 +304,7 @@ func (log *ZinxLoggerCore) Panicf(format string, v ...interface{}) {
 	panic(s)
 }
 
-func (log *ZinxLoggerCore) Panic(v ...interface{}) {
+func (log *GLoggerCore) Panic(v ...interface{}) {
 	if log.verifyLogIsolation(LogPanic) {
 		return
 	}
@@ -325,7 +313,7 @@ func (log *ZinxLoggerCore) Panic(v ...interface{}) {
 	panic(s)
 }
 
-func (log *ZinxLoggerCore) Stack(v ...interface{}) {
+func (log *GLoggerCore) Stack(v ...interface{}) {
 	s := fmt.Sprint(v...)
 	s += "\n"
 	buf := make([]byte, LOG_MAX_BUF)
@@ -337,7 +325,7 @@ func (log *ZinxLoggerCore) Stack(v ...interface{}) {
 
 // Flags gets the current log bitmap flags
 // (获取当前日志bitmap标记)
-func (log *ZinxLoggerCore) Flags() int {
+func (log *GLoggerCore) Flags() int {
 	log.mu.Lock()
 	defer log.mu.Unlock()
 	return log.flag
@@ -345,7 +333,7 @@ func (log *ZinxLoggerCore) Flags() int {
 
 // ResetFlags resets the log Flags bitmap flags
 // (重新设置日志Flags bitMap 标记位)
-func (log *ZinxLoggerCore) ResetFlags(flag int) {
+func (log *GLoggerCore) ResetFlags(flag int) {
 	log.mu.Lock()
 	defer log.mu.Unlock()
 	log.flag = flag
@@ -353,7 +341,7 @@ func (log *ZinxLoggerCore) ResetFlags(flag int) {
 
 // AddFlag adds a flag to the bitmap flags
 // (添加flag标记)
-func (log *ZinxLoggerCore) AddFlag(flag int) {
+func (log *GLoggerCore) AddFlag(flag int) {
 	log.mu.Lock()
 	defer log.mu.Unlock()
 	log.flag |= flag
@@ -361,7 +349,7 @@ func (log *ZinxLoggerCore) AddFlag(flag int) {
 
 // SetPrefix sets a custom prefix for the log
 // (设置日志的 用户自定义前缀字符串)
-func (log *ZinxLoggerCore) SetPrefix(prefix string) {
+func (log *GLoggerCore) SetPrefix(prefix string) {
 	log.mu.Lock()
 	defer log.mu.Unlock()
 	log.prefix = prefix
@@ -369,7 +357,7 @@ func (log *ZinxLoggerCore) SetPrefix(prefix string) {
 
 // SetLogFile sets the log file output
 // (设置日志文件输出)
-func (log *ZinxLoggerCore) SetLogFile(fileDir string, fileName string) {
+func (log *GLoggerCore) SetLogFile(fileDir string, fileName string) {
 	if log.fw != nil {
 		log.fw.Close()
 	}
@@ -377,7 +365,7 @@ func (log *ZinxLoggerCore) SetLogFile(fileDir string, fileName string) {
 }
 
 // SetMaxAge 最大保留天数
-func (log *ZinxLoggerCore) SetMaxAge(ma int) {
+func (log *GLoggerCore) SetMaxAge(ma int) {
 	if log.fw == nil {
 		return
 	}
@@ -387,7 +375,7 @@ func (log *ZinxLoggerCore) SetMaxAge(ma int) {
 }
 
 // SetMaxSize 单个日志最大容量 单位：字节
-func (log *ZinxLoggerCore) SetMaxSize(ms int64) {
+func (log *GLoggerCore) SetMaxSize(ms int64) {
 	if log.fw == nil {
 		return
 	}
@@ -397,7 +385,7 @@ func (log *ZinxLoggerCore) SetMaxSize(ms int64) {
 }
 
 // SetCons 同时输出控制台
-func (log *ZinxLoggerCore) SetCons(b bool) {
+func (log *GLoggerCore) SetCons(b bool) {
 	if log.fw == nil {
 		return
 	}
@@ -408,17 +396,17 @@ func (log *ZinxLoggerCore) SetCons(b bool) {
 
 // Close the file associated with the log
 // (关闭日志绑定的文件)
-func (log *ZinxLoggerCore) closeFile() {
+func (log *GLoggerCore) closeFile() {
 	if log.fw != nil {
 		log.fw.Close()
 	}
 }
 
-func (log *ZinxLoggerCore) SetLogLevel(logLevel int) {
+func (log *GLoggerCore) SetLogLevel(logLevel int) {
 	log.isolationLevel = logLevel
 }
 
-func (log *ZinxLoggerCore) checkFileExist(filename string) bool {
+func (log *GLoggerCore) checkFileExist(filename string) bool {
 	exist := true
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		exist = false
