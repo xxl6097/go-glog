@@ -15,6 +15,30 @@ import (
 )
 
 const (
+	Reset       = "\033[0m"
+	Red         = "\033[31m"
+	Green       = "\033[32m"
+	Yellow      = "\033[33m"
+	Blue        = "\033[34m"
+	Magenta     = "\033[35m"
+	Cyan        = "\033[36m"
+	White       = "\033[37m"
+	BlueBold    = "\033[34;1m"
+	MagentaBold = "\033[35;1m"
+	RedBold     = "\033[31;1m"
+	YellowBold  = "\033[33;1m"
+)
+
+var colors = []string{
+	Green,
+	Blue,
+	Magenta,
+	Red,
+	BlueBold,
+	Yellow,
+}
+
+const (
 	sizeMiB    = 1024 * 1024
 	defMaxAge  = 31
 	defMaxSize = 64 //MiB
@@ -37,12 +61,14 @@ type Writer struct {
 	file      *os.File
 	bw        *bufio.Writer
 	mu        sync.Mutex
+	out       io.Writer //日志输出的文件描述符
 }
 
-func New(path string) *Writer {
+func New(out io.Writer, path string) *Writer {
 	w := &Writer{
 		fpath: path, //dir1/dir2/app.log
 		mu:    sync.Mutex{},
+		out:   out,
 	}
 	w.fdir = filepath.Dir(w.fpath)                                  //dir1/dir2
 	w.fsuffix = filepath.Ext(w.fpath)                               //.log
@@ -89,15 +115,27 @@ func (w *Writer) SetCons(b bool) {
 	w.mu.Unlock()
 }
 
-func (w *Writer) Write(p []byte) (n int, err error) {
+func (w *Writer) WriteInConsole(level int, p []byte) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.cons {
-		os.Stderr.Write(p)
+		var buf bytes.Buffer
+		buf.WriteString(colors[level])
+		buf.Write(p)
+		buf.WriteString(Reset)
+		w.out.Write(buf.Bytes())
 	}
+}
+
+func (w *Writer) Write(p []byte) (n int, err error) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	//if w.cons {
+	//	w.out.Write(p)
+	//}
 	if w.file == nil {
 		if err := w.rotate(); err != nil {
-			os.Stderr.Write(p)
+			w.out.Write(p)
 			return 0, err
 		}
 	}

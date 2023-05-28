@@ -12,6 +12,9 @@ func main() {
 
 	for {
 		glog.Info("fajswehfasef")
+		glog.Error("fajswehfasef")
+		glog.Warn("fajswehfasef")
+		glog.Debug("fajswehfasef")
 		time.Sleep(time.Second)
 	}
 }

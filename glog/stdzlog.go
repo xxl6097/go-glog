@@ -1,5 +1,7 @@
 package glog
 
+import "os"
+
 /*
 	A global Log handle is provided by default for external use, which can be called directly through the API series.
 	The global log object is StdGLog.
@@ -18,7 +20,7 @@ package glog
    zlog.Ins().InfoF()等方法
 */
 
-var StdGLog = NewGLog("", BitDefault)
+var StdGLog = NewGLog(os.Stdout, "", BitDefault)
 
 func Flags() int {
 	return StdGLog.Flags()

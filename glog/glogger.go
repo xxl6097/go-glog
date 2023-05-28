@@ -3,6 +3,7 @@ package glog
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -50,8 +51,8 @@ var levels = []string{
 type GLoggerCore struct {
 	// to ensure thread-safe when multiple goroutines read and write files to prevent mixed-up content, achieving concurrency safety
 	// (确保多协程读写文件，防止文件内容混乱，做到协程安全)
-	mu sync.Mutex
-
+	mu  sync.Mutex
+	out io.Writer //日志输出的文件描述符
 	// the prefix string for each line of the log, which has the log tag
 	// (每行log日志的前缀字符串,拥有日志标记)
 	prefix string
@@ -75,12 +76,11 @@ type GLoggerCore struct {
 	onLogHook func([]byte)
 }
 
-func NewGLog(prefix string, flag int) *GLoggerCore {
+func NewGLog(out io.Writer, prefix string, flag int) *GLoggerCore {
 
 	// By default, debug is turned on, the depth is 2, and the ZinxLogger object calling the log print method can call up to two levels to reach the output function
 	// (默认 debug打开， calledDepth深度为2,ZinxLogger对象调用日志打印方法最多调用两层到达output函数)
-	zlog := &GLoggerCore{prefix: prefix, flag: flag, isolationLevel: 0, calldDepth: 2}
-
+	zlog := &GLoggerCore{out: out, prefix: prefix, flag: flag, isolationLevel: 0, calldDepth: 2}
 	// Set the log object's resource cleanup destructor method (this is not necessary, as go's Gc will automatically collect, but for the sake of neatness)
 	// (设置log对象 回收资源 析构方法(不设置也可以，go的Gc会自动回收，强迫症没办法))
 	runtime.SetFinalizer(zlog, CleanGLog)
@@ -199,13 +199,15 @@ func (log *GLoggerCore) OutPut(level int, s string) error {
 	if len(s) > 0 && s[len(s)-1] != '\n' {
 		log.buf.WriteByte('\n')
 	}
-
+	//infoStr = Green + "%s\n" + Reset + Green + "[info] " + Reset
 	var err error
 	if log.fw == nil {
 		// if log file is not set, output to console
-		_, _ = os.Stderr.Write(log.buf.Bytes())
+		_, _ = log.out.Write(log.buf.Bytes())
+		//PrintLog(level, log.out, log.buf.Bytes())
 	} else {
 		// write the filled buffer to IO output
+		log.fw.WriteInConsole(level, log.buf.Bytes())
 		_, err = log.fw.Write(log.buf.Bytes())
 	}
 
@@ -361,7 +363,7 @@ func (log *GLoggerCore) SetLogFile(fileDir string, fileName string) {
 	if log.fw != nil {
 		log.fw.Close()
 	}
-	log.fw = New(filepath.Join(fileDir, fileName))
+	log.fw = New(log.out, filepath.Join(fileDir, fileName))
 }
 
 // SetMaxAge 最大保留天数
