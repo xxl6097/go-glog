@@ -1,5 +1,12 @@
 # go-glog的使用方式
 
+## 一、添加依赖
+
+```go
+go get -u github.com/xxl6097/go-glog
+```
+
+## 二、使用示例
 ```go
 
 package main
@@ -30,3 +37,5 @@ func main() {
 }
 
 ```
+
+
