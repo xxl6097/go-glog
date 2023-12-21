@@ -21,6 +21,10 @@ func main() {
 	for {
 		fmt.Println("aaa")
 		glog.Info("只有使用这个log打印才能记录日志哦")
+		glog.Info("Info。。。。")
+		glog.Error("Error。。。。")
+		glog.Warn("Warn。。。")
+		glog.Debug("Debug。。。")
 		time.Sleep(time.Second)
 	}
 }
