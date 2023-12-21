@@ -51,6 +51,11 @@ func LogSaveFile() {
 	StdZinxLog.SetCons(true)
 }
 
+// Hook hook log
+func Hook(f func([]byte)) {
+	StdZinxLog.SetLogHook(f)
+}
+
 // SetMaxAge 最大保留天数
 func SetMaxAge(ma int) {
 	StdZinxLog.SetMaxAge(ma)
