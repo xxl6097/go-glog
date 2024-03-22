@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 )
@@ -104,7 +105,7 @@ file: The file name of the source code invoking the log function.
 line: The line number of the source code invoking the log function.
 level: The log level of the current log entry.
 */
-func (log *GLoggerCore) formatHeader(t time.Time, file string, line int, level int) {
+func (log *GLoggerCore) formatHeader(t time.Time, file string, funcname string, line int, level int) {
 	var buf *bytes.Buffer = &log.buf
 	// If the current prefix string is not empty, write the prefix first.
 	if log.prefix != "" {
@@ -162,6 +163,10 @@ func (log *GLoggerCore) formatHeader(t time.Time, file string, line int, level i
 				file = short
 			}
 			buf.WriteString(file)
+			buf.WriteByte('[')
+			buf.WriteString(funcname)
+			buf.WriteString("()")
+			buf.WriteByte(']')
 			buf.WriteByte(':')
 			itoa(buf, line, -1) // line number
 			buf.WriteString(": ")
@@ -172,8 +177,10 @@ func (log *GLoggerCore) formatHeader(t time.Time, file string, line int, level i
 // OutPut outputs log file, the original method
 func (log *GLoggerCore) OutPut(level int, s string) error {
 	now := time.Now() // get current time
-	var file string   // file name of the current caller of the log interface
-	var line int      // line number of the executed code
+	var funcName string
+	var file string // file name of the current caller of the log interface
+	var line int    // file name of the current caller of the log interface
+	var pc uintptr  // line number of the executed code
 	log.mu.Lock()
 	defer log.mu.Unlock()
 
@@ -181,10 +188,14 @@ func (log *GLoggerCore) OutPut(level int, s string) error {
 		log.mu.Unlock()
 		var ok bool
 		// get the file name and line number of the current caller
-		_, file, line, ok = runtime.Caller(log.calldDepth)
+		pc, file, line, ok = runtime.Caller(log.calldDepth)
 		if !ok {
 			file = "unknown-file"
 			line = 0
+		} else {
+			funcName = runtime.FuncForPC(pc).Name()
+			funcName = filepath.Ext(funcName)
+			funcName = strings.TrimPrefix(funcName, ".")
 		}
 		log.mu.Lock()
 	}
@@ -192,7 +203,7 @@ func (log *GLoggerCore) OutPut(level int, s string) error {
 	// reset buffer
 	log.buf.Reset()
 	// write log header
-	log.formatHeader(now, file, line, level)
+	log.formatHeader(now, file, funcName, line, level)
 	// write log content
 	log.buf.WriteString(s)
 	// add line break
