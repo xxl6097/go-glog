@@ -1,6 +1,9 @@
 package glog
 
-import "os"
+import (
+	"fmt"
+	"os"
+)
 
 /*
 	A global Log handle is provided by default for external use, which can be called directly through the API series.
@@ -78,6 +81,22 @@ func Debugf(format string, v ...interface{}) {
 
 func Debug(v ...interface{}) {
 	StdGLog.Debug(v...)
+}
+
+func Println(a ...any) {
+	StdGLog.Info(a...)
+}
+
+func Sprintf(format string, a ...any) string {
+	return fmt.Sprintf(format, a...)
+}
+
+func Print(a ...any) {
+	StdGLog.Info(a...)
+}
+
+func Printf(format string, a ...any) {
+	StdGLog.Infof(format, a...)
 }
 
 func Infof(format string, v ...interface{}) {

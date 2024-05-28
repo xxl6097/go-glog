@@ -39,7 +39,7 @@ func testlog() {
 }
 
 func main() {
-
+	glog.Println("PrintlnPrintlnPrintln。。。。")
 	testlog()
 	for {
 		fmt.Println("aaa")

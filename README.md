@@ -1,5 +1,11 @@
 # go-glog的使用方式
 
+```shell
+git add .
+git commit -m "release v0.0.5"
+git tag -a v0.0.5 -m "release v0.0.5"
+git push origin v0.0.5
+```
 ## 一、添加依赖
 
 ```go
