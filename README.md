@@ -9,7 +9,7 @@ git push origin v0.0.5
 ## 一、添加依赖
 
 ```go
-go get -u github.com/xxl6097/go-glog
+go get -u github.com/xxl6097/go-glog@v0.0.5
 ```
 
 ## 二、使用示例
