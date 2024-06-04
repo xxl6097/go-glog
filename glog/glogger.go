@@ -175,6 +175,13 @@ func (log *GLoggerCore) formatHeader(t time.Time, file string, funcname string, 
 }
 
 // OutPut outputs log file, the original method
+func (log *GLoggerCore) Flush() error {
+	log.mu.Lock()
+	defer log.mu.Unlock()
+	return log.fw.Flush()
+}
+
+// OutPut outputs log file, the original method
 func (log *GLoggerCore) OutPut(level int, s string) error {
 	now := time.Now() // get current time
 	var funcName string

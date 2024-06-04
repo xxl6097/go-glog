@@ -87,6 +87,10 @@ func Println(a ...any) {
 	StdGLog.Info(a...)
 }
 
+func Flush() error {
+	return StdGLog.Flush()
+}
+
 func Sprintf(format string, a ...any) string {
 	return fmt.Sprintf(format, a...)
 }

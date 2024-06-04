@@ -268,6 +268,15 @@ func (w *Writer) flush() error {
 	return w.bw.Flush()
 }
 
+func (w *Writer) Flush() error {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	if w.bw == nil {
+		return nil
+	}
+	return w.bw.Flush()
+}
+
 // appendInt appends the decimal form of x to b and returns the result.
 // If the decimal form (excluding sign) is shorter than width, the result is padded with leading 0's.
 // Duplicates functionality in strconv, but avoids dependency.

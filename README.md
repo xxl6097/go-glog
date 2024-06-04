@@ -2,9 +2,9 @@
 
 ```shell
 git add .
-git commit -m "release v0.0.5"
-git tag -a v0.0.5 -m "release v0.0.5"
-git push origin v0.0.5
+git commit -m "release v0.0.6"
+git tag -a v0.0.6 -m "release v0.0.6"
+git push origin v0.0.6
 ```
 ## 一、添加依赖
 

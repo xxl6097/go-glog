@@ -5,7 +5,6 @@ import (
 	"github.com/xxl6097/go-glog/glog"
 	"path"
 	"runtime"
-	"time"
 )
 
 func hook(data []byte) {
@@ -39,15 +38,16 @@ func testlog() {
 }
 
 func main() {
-	glog.Println("PrintlnPrintlnPrintln。。。。")
-	testlog()
-	for {
-		fmt.Println("aaa")
-		glog.Info("只有使用这个log打印才能记录日志哦")
-		glog.Info("Info。。。。")
-		glog.Error("Error。。。。")
-		glog.Warn("Warn。。。")
-		glog.Debug("Debug。。。")
-		time.Sleep(time.Second)
-	}
+	glog.Println("hello glog...")
+	glog.Flush()
+	//testlog()
+	//for {
+	//	fmt.Println("aaa")
+	//	glog.Info("只有使用这个log打印才能记录日志哦")
+	//	glog.Info("Info。。。。")
+	//	glog.Error("Error。。。。")
+	//	glog.Warn("Warn。。。")
+	//	glog.Debug("Debug。。。")
+	//	time.Sleep(5 * time.Second)
+	//}
 }
