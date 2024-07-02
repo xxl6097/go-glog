@@ -6,6 +6,14 @@ git commit -m "release v0.0.6"
 git tag -a v0.0.6 -m "release v0.0.6"
 git push origin v0.0.6
 ```
+
+## 编译
+
+```
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build main.go
+
+CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o main.exe main.go
+```
 ## 一、添加依赖
 
 ```go

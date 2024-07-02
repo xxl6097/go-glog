@@ -71,6 +71,13 @@ func SetCons(b bool) {
 	StdGLog.SetCons(b)
 }
 
+func SetNoHeader(b bool) {
+	StdGLog.SetNoHeader(b)
+}
+func SetNoColor(b bool) {
+	StdGLog.SetNoColor(b)
+}
+
 func SetLogLevel(logLevel int) {
 	StdGLog.SetLogLevel(logLevel)
 }

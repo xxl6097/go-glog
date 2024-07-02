@@ -56,7 +56,8 @@ type GLoggerCore struct {
 	out io.Writer //日志输出的文件描述符
 	// the prefix string for each line of the log, which has the log tag
 	// (每行log日志的前缀字符串,拥有日志标记)
-	prefix string
+	prefix   string
+	noHeader bool
 
 	// log tag bit (日志标记位)
 	flag int
@@ -210,7 +211,10 @@ func (log *GLoggerCore) OutPut(level int, s string) error {
 	// reset buffer
 	log.buf.Reset()
 	// write log header
-	log.formatHeader(now, file, funcName, line, level)
+	if !log.noHeader {
+		log.formatHeader(now, file, funcName, line, level)
+	}
+
 	// write log content
 	log.buf.WriteString(s)
 	// add line break
@@ -375,6 +379,14 @@ func (log *GLoggerCore) SetPrefix(prefix string) {
 	log.prefix = prefix
 }
 
+// SetPrefix sets a custom prefix for the log
+// (设置日志的 用户自定义前缀字符串)
+func (log *GLoggerCore) SetNoHeader(yes bool) {
+	log.mu.Lock()
+	defer log.mu.Unlock()
+	log.noHeader = yes
+}
+
 // SetLogFile sets the log file output
 // (设置日志文件输出)
 func (log *GLoggerCore) SetLogFile(fileDir string, fileName string) {
@@ -412,6 +424,14 @@ func (log *GLoggerCore) SetCons(b bool) {
 	log.mu.Lock()
 	defer log.mu.Unlock()
 	log.fw.SetCons(b)
+}
+func (log *GLoggerCore) SetNoColor(b bool) {
+	if log.fw == nil {
+		return
+	}
+	log.mu.Lock()
+	defer log.mu.Unlock()
+	log.fw.SetNoColor(b)
 }
 
 // Close the file associated with the log

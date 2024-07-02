@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/xxl6097/go-glog/glog"
+	"os"
 	"path"
 	"runtime"
 )
@@ -14,6 +15,7 @@ func hook(data []byte) {
 func init() {
 	//开启日志保存文件
 	glog.LogSaveFile()
+	//glog.SetNoHeader(true)
 	//拦截日志
 	//glog.Hook(hook)
 }
@@ -50,4 +52,6 @@ func main() {
 	//	glog.Debug("Debug。。。")
 	//	time.Sleep(5 * time.Second)
 	//}
+	fmt.Scanln()
+	os.Exit(0)
 }

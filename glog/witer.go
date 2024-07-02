@@ -14,21 +14,6 @@ import (
 	"time"
 )
 
-const (
-	Reset       = "\033[0m"
-	Red         = "\033[31m"
-	Green       = "\033[32m"
-	Yellow      = "\033[33m"
-	Blue        = "\033[34m"
-	Magenta     = "\033[35m"
-	Cyan        = "\033[36m"
-	White       = "\033[37m"
-	BlueBold    = "\033[34;1m"
-	MagentaBold = "\033[35;1m"
-	RedBold     = "\033[31;1m"
-	YellowBold  = "\033[33;1m"
-)
-
 var colors = []string{
 	Green,
 	Blue,
@@ -58,6 +43,7 @@ type Writer struct {
 	created   time.Time // 文件创建日期
 	creates   []byte    // 文件创建日期
 	cons      bool      // 标准输出  默认 false
+	nocolor   bool      // 标准输出  默认 false
 	file      *os.File
 	bw        *bufio.Writer
 	mu        sync.Mutex
@@ -115,14 +101,24 @@ func (w *Writer) SetCons(b bool) {
 	w.mu.Unlock()
 }
 
+func (w *Writer) SetNoColor(b bool) {
+	w.mu.Lock()
+	w.nocolor = b
+	w.mu.Unlock()
+}
+
 func (w *Writer) WriteInConsole(level int, p []byte) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.cons {
 		var buf bytes.Buffer
-		buf.WriteString(colors[level])
+		if !w.nocolor {
+			buf.WriteString(colors[level])
+		}
 		buf.Write(p)
-		buf.WriteString(Reset)
+		if !w.nocolor {
+			buf.WriteString(Reset)
+		}
 		w.out.Write(buf.Bytes())
 	}
 }
