@@ -211,7 +211,7 @@ func (w *Writer) rotate() error {
 	w.creates = w.created.AppendFormat(nil, time.RFC3339)
 	fout, err := os.OpenFile(w.fpath, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0666)
 	if err != nil {
-		fmt.Println(w.fpath, err)
+		fmt.Println("witer.go rotate", w.fpath, err)
 		return err
 	}
 	w.file = fout

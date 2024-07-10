@@ -51,7 +51,7 @@ func testlog() {
 
 func main() {
 	glog.Println("hello glog...")
-	glog.SetLogFile("/usr/local/AATEST/logs", "normal.log")
+	//glog.SetLogFile("/usr/local/AATEST/logs", "normal.log")
 	glog.Info("只有使用这个log打印才能记录日志哦", time.Now().Format("2006-01-02 15:04:05"))
 	//glog.Flush()
 	//testlog()
