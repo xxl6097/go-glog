@@ -23,9 +23,9 @@ func init() {
 	//glog.SetNoHeader(true)
 	//glog.SetNoColor(true)
 
-	glog.SetMaxSize(1 * 1024 * 1024)
-	glog.SetMaxAge(15)
-	glog.SetCons(true)
+	//glog.SetMaxSize(1 * 1024 * 1024)
+	//glog.SetMaxAge(15)
+	//glog.SetCons(true)
 	//glog.SetNoHeader(true)
 	//glog.SetNoColor(true)
 }
@@ -50,17 +50,19 @@ func testlog() {
 }
 
 func main() {
-	//glog.Println("hello glog...")
+	glog.Println("hello glog...")
+	glog.SetLogFile("./logs", "normal.log")
+	glog.Info("只有使用这个log打印才能记录日志哦", time.Now().Format("2006-01-02 15:04:05"))
 	//glog.Flush()
 	//testlog()
-	for {
-		glog.Info("只有使用这个log打印才能记录日志哦", time.Now().Format("2006-01-02 15:04:05"))
-		//glog.Info("Info。。。。")
-		//glog.Error("Error。。。。")
-		//glog.Warn("Warn。。。")
-		//glog.Debug("Debug。。。")
-		time.Sleep(5 * time.Second)
-	}
+	//for {
+	//	glog.Info("只有使用这个log打印才能记录日志哦", time.Now().Format("2006-01-02 15:04:05"))
+	//	//glog.Info("Info。。。。")
+	//	//glog.Error("Error。。。。")
+	//	//glog.Warn("Warn。。。")
+	//	//glog.Debug("Debug。。。")
+	//	time.Sleep(5 * time.Second)
+	//}
 	fmt.Scanln()
 	os.Exit(0)
 }

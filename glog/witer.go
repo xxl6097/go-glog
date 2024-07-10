@@ -248,7 +248,9 @@ func (w *Writer) time2name(t time.Time) string {
 }
 
 func (w *Writer) Close() error {
-	w.flush()
+	err := w.flush()
+	err = w.close()
+	fmt.Println(err)
 	return w.close()
 }
 
