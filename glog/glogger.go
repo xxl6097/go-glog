@@ -393,7 +393,9 @@ func (log *GLoggerCore) SetNoHeader(yes bool) {
 func (log *GLoggerCore) SetLogFile(fileDir string, fileName string) {
 	if log.fw != nil {
 		err := log.fw.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 	log.fw = New(log.out, filepath.Join(fileDir, fileName))
 }

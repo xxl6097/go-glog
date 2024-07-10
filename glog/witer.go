@@ -68,7 +68,10 @@ func New(out io.Writer, path string) *Writer {
 	}
 	w.maxSize = sizeMiB * defMaxSize
 	w.maxAge = defMaxAge
-	os.MkdirAll(filepath.Dir(w.fpath), 0755)
+	err := os.MkdirAll(filepath.Dir(w.fpath), 0755)
+	if err != nil {
+		fmt.Println(err)
+	}
 	go w.daemon()
 	return w
 }
@@ -141,7 +144,7 @@ func (w *Writer) Write(buffer []byte) (n int, err error) {
 	}
 	if w.file == nil {
 		if err := w.rotate(); err != nil {
-			w.out.Write(p)
+			//w.out.Write(p)
 			return 0, err
 		}
 	}
@@ -250,7 +253,9 @@ func (w *Writer) time2name(t time.Time) string {
 func (w *Writer) Close() error {
 	err := w.flush()
 	err = w.close()
-	fmt.Println(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 	return err
 }
 
