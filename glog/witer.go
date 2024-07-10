@@ -55,6 +55,7 @@ func New(out io.Writer, path string) *Writer {
 		fpath: path, //dir1/dir2/app.log
 		mu:    sync.Mutex{},
 		out:   out,
+		cons:  true,
 	}
 	w.fdir = filepath.Dir(w.fpath)                                  //dir1/dir2
 	w.fsuffix = filepath.Ext(w.fpath)                               //.log
