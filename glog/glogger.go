@@ -56,9 +56,7 @@ type GLoggerCore struct {
 	out io.Writer //日志输出的文件描述符
 	// the prefix string for each line of the log, which has the log tag
 	// (每行log日志的前缀字符串,拥有日志标记)
-	prefix   string
-	noHeader bool
-
+	prefix string
 	// log tag bit (日志标记位)
 	flag int
 
@@ -107,8 +105,10 @@ file: The file name of the source code invoking the log function.
 line: The line number of the source code invoking the log function.
 level: The log level of the current log entry.
 */
-func (log *GLoggerCore) formatHeader(t time.Time, file string, funcname string, line int, level int) {
-	var buf *bytes.Buffer = &log.buf
+func (log *GLoggerCore) formatHeader(t time.Time, file string, funcname string, line int, level int) []byte {
+	//var buffer bytes.Buffer
+	buf := bytes.NewBuffer([]byte{})
+	//var buf *bytes.Buffer = &log.buf
 	// If the current prefix string is not empty, write the prefix first.
 	if log.prefix != "" {
 		buf.WriteByte('<')
@@ -174,6 +174,7 @@ func (log *GLoggerCore) formatHeader(t time.Time, file string, funcname string, 
 			buf.WriteString(": ")
 		}
 	}
+	return buf.Bytes()
 }
 
 // OutPut outputs log file, the original method
@@ -213,9 +214,11 @@ func (log *GLoggerCore) OutPut(level int, s string) error {
 	log.buf.Reset()
 	log.buf.WriteByte(byte(level))
 	// write log header
-	if !log.noHeader {
-		log.formatHeader(now, file, funcName, line, level)
-	}
+	headers := log.formatHeader(now, file, funcName, line, level)
+	length := uint32(len(headers))
+	headbuf := []byte{byte((length >> 24) & 0xFF), byte((length >> 16) & 0xFF), byte((length >> 8) & 0xFF), byte(length & 0xFF)}
+	log.buf.Write(headbuf)
+	log.buf.Write(headers)
 
 	// write log content
 	log.buf.WriteString(s)
@@ -385,7 +388,7 @@ func (log *GLoggerCore) SetPrefix(prefix string) {
 func (log *GLoggerCore) SetNoHeader(yes bool) {
 	log.mu.Lock()
 	defer log.mu.Unlock()
-	log.noHeader = yes
+	log.fw.SetNoHeader(yes)
 }
 
 // SetLogFile sets the log file output

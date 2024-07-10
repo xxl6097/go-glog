@@ -43,7 +43,8 @@ type Writer struct {
 	created   time.Time // 文件创建日期
 	creates   []byte    // 文件创建日期
 	cons      bool      // 标准输出  默认 false
-	nocolor   bool      // 标准输出  默认 false
+	nocolor   bool      // 颜色输出
+	noHeader  bool      // 日志头
 	file      *os.File
 	bw        *bufio.Writer
 	mu        sync.Mutex
@@ -111,6 +112,12 @@ func (w *Writer) SetNoColor(b bool) {
 	w.mu.Unlock()
 }
 
+func (w *Writer) SetNoHeader(b bool) {
+	w.mu.Lock()
+	w.noHeader = b
+	w.mu.Unlock()
+}
+
 //func (w *Writer) WriteInConsole(level int, p []byte) {
 //	w.mu.Lock()
 //	defer w.mu.Unlock()
@@ -130,22 +137,31 @@ func (w *Writer) SetNoColor(b bool) {
 func (w *Writer) Write(buffer []byte) (n int, err error) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
-	p := buffer[1:]
+	p := buffer[5:]
+
 	if w.cons {
 		var buf bytes.Buffer
 		if !w.nocolor {
 			buf.WriteString(colors[buffer[0]])
 		}
-		buf.Write(p)
+		if w.noHeader {
+			header_size := int((uint(buffer[1]) << 24) |
+				(uint(buffer[2]) << 16) |
+				(uint(buffer[3]) << 8) |
+				uint(buffer[4]))
+			buf.Write(p[header_size:])
+		} else {
+			buf.Write(p)
+		}
 		if !w.nocolor {
 			buf.WriteString(Reset)
 		}
 		w.out.Write(buf.Bytes())
 	}
 	if w.file == nil {
-		if err := w.rotate(); err != nil {
+		if err1 := w.rotate(); err1 != nil {
 			//w.out.Write(p)
-			return 0, err
+			return 0, err1
 		}
 	}
 
