@@ -83,6 +83,7 @@ func NewGLog(out io.Writer, prefix string, flag int) *GLoggerCore {
 	// By default, debug is turned on, the depth is 2, and the ZinxLogger object calling the log print method can call up to two levels to reach the output function
 	// (默认 debug打开， calledDepth深度为2,ZinxLogger对象调用日志打印方法最多调用两层到达output函数)
 	zlog := &GLoggerCore{out: out, prefix: prefix, flag: flag, isolationLevel: 0, calldDepth: 2}
+	zlog.fw = New(zlog.out, filepath.Join("./logs", "app.log"))
 	// Set the log object's resource cleanup destructor method (this is not necessary, as go's Gc will automatically collect, but for the sake of neatness)
 	// (设置log对象 回收资源 析构方法(不设置也可以，go的Gc会自动回收，强迫症没办法))
 	runtime.SetFinalizer(zlog, CleanGLog)
@@ -210,6 +211,7 @@ func (log *GLoggerCore) OutPut(level int, s string) error {
 
 	// reset buffer
 	log.buf.Reset()
+	log.buf.WriteByte(byte(level))
 	// write log header
 	if !log.noHeader {
 		log.formatHeader(now, file, funcName, line, level)
@@ -223,16 +225,15 @@ func (log *GLoggerCore) OutPut(level int, s string) error {
 	}
 	//infoStr = Green + "%s\n" + Reset + Green + "[info] " + Reset
 	var err error
-	if log.fw == nil {
-		// if log file is not set, output to console
-		_, _ = log.out.Write(log.buf.Bytes())
-		//PrintLog(level, log.out, log.buf.Bytes())
-	} else {
-		// write the filled buffer to IO output
-		log.fw.WriteInConsole(level, log.buf.Bytes())
-		_, err = log.fw.Write(log.buf.Bytes())
-	}
-
+	//if log.fw == nil {
+	//	// if log file is not set, output to console
+	//	_, _ = log.out.Write(log.buf.Bytes())
+	//	//PrintLog(level, log.out, log.buf.Bytes())
+	//} else {
+	//	// write the filled buffer to IO output
+	//}
+	//log.fw.WriteInConsole(level, log.buf.Bytes())
+	_, err = log.fw.Write(log.buf.Bytes())
 	if log.onLogHook != nil {
 		log.onLogHook(log.buf.Bytes())
 	}

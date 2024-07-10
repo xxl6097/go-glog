@@ -107,13 +107,30 @@ func (w *Writer) SetNoColor(b bool) {
 	w.mu.Unlock()
 }
 
-func (w *Writer) WriteInConsole(level int, p []byte) {
+//func (w *Writer) WriteInConsole(level int, p []byte) {
+//	w.mu.Lock()
+//	defer w.mu.Unlock()
+//	if w.cons {
+//		var buf bytes.Buffer
+//		if !w.nocolor {
+//			buf.WriteString(colors[level])
+//		}
+//		buf.Write(p)
+//		if !w.nocolor {
+//			buf.WriteString(Reset)
+//		}
+//		w.out.Write(buf.Bytes())
+//	}
+//}
+
+func (w *Writer) Write(buffer []byte) (n int, err error) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
+	p := buffer[1:]
 	if w.cons {
 		var buf bytes.Buffer
 		if !w.nocolor {
-			buf.WriteString(colors[level])
+			buf.WriteString(colors[buffer[0]])
 		}
 		buf.Write(p)
 		if !w.nocolor {
@@ -121,14 +138,6 @@ func (w *Writer) WriteInConsole(level int, p []byte) {
 		}
 		w.out.Write(buf.Bytes())
 	}
-}
-
-func (w *Writer) Write(p []byte) (n int, err error) {
-	w.mu.Lock()
-	defer w.mu.Unlock()
-	//if w.cons {
-	//	w.out.Write(p)
-	//}
 	if w.file == nil {
 		if err := w.rotate(); err != nil {
 			w.out.Write(p)

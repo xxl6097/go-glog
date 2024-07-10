@@ -48,7 +48,6 @@ func SetLogFile(fileDir string, fileName string) {
 
 func LogSaveFile() {
 	StdGLog.SetLogFile("./", "app.log")
-	StdGLog.SetCons(true)
 }
 
 // Hook hook log

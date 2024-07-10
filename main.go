@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"runtime"
+	"time"
 )
 
 func hook(data []byte) {
@@ -14,10 +15,19 @@ func hook(data []byte) {
 
 func init() {
 	//开启日志保存文件
-	glog.LogSaveFile()
+	//glog.LogSaveFile()
 	//glog.SetNoHeader(true)
 	//拦截日志
 	//glog.Hook(hook)
+	//glog.SetCons(true)
+	//glog.SetNoHeader(true)
+	//glog.SetNoColor(true)
+
+	glog.SetMaxSize(1 * 1024 * 1024)
+	glog.SetMaxAge(15)
+	glog.SetCons(true)
+	//glog.SetNoHeader(true)
+	//glog.SetNoColor(true)
 }
 func getCallerInfo(skip int) (info string) {
 
@@ -40,18 +50,17 @@ func testlog() {
 }
 
 func main() {
-	glog.Println("hello glog...")
-	glog.Flush()
+	//glog.Println("hello glog...")
+	//glog.Flush()
 	//testlog()
-	//for {
-	//	fmt.Println("aaa")
-	//	glog.Info("只有使用这个log打印才能记录日志哦")
-	//	glog.Info("Info。。。。")
-	//	glog.Error("Error。。。。")
-	//	glog.Warn("Warn。。。")
-	//	glog.Debug("Debug。。。")
-	//	time.Sleep(5 * time.Second)
-	//}
+	for {
+		glog.Info("只有使用这个log打印才能记录日志哦", time.Now().Format("2006-01-02 15:04:05"))
+		//glog.Info("Info。。。。")
+		//glog.Error("Error。。。。")
+		//glog.Warn("Warn。。。")
+		//glog.Debug("Debug。。。")
+		time.Sleep(5 * time.Second)
+	}
 	fmt.Scanln()
 	os.Exit(0)
 }
