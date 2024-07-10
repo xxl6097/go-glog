@@ -251,7 +251,7 @@ func (w *Writer) Close() error {
 	err := w.flush()
 	err = w.close()
 	fmt.Println(err)
-	return w.close()
+	return err
 }
 
 // close closes the file if it is open.
@@ -261,8 +261,8 @@ func (w *Writer) close() error {
 	if w.file == nil {
 		return nil
 	}
-	w.file.Sync()
-	err := w.file.Close()
+	err := w.file.Sync()
+	err = w.file.Close()
 	w.file = nil
 	return err
 }
