@@ -261,10 +261,13 @@ func (w *Writer) delete() {
 func (w *Writer) name2time(name string) (time.Time, error) {
 	name = strings.TrimPrefix(name, filepath.Base(w.fname))
 	name = strings.TrimSuffix(name, w.zipsuffix)
-	return time.Parse(".2006-01-02-150405", name)
+	//return time.Parse(".2006-01-02-150405", name)
+	return time.Parse(".2006-01-02", name)
 }
+
 func (w *Writer) time2name(t time.Time) string {
-	return t.Format(".2006-01-02-150405")
+	//return t.Format(".2006-01-02-150405")
+	return t.Format(".2006-01-02")
 }
 
 func (w *Writer) Close() error {
