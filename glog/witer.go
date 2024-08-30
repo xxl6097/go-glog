@@ -138,17 +138,20 @@ func (w *Writer) Write(buffer []byte) (n int, err error) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	p := buffer[5:]
-
+	index := buffer[0]
+	isCons := index >> 3
+	header_size := buffer[1]
 	if w.cons {
 		var buf bytes.Buffer
 		if !w.nocolor {
-			buf.WriteString(colors[buffer[0]])
+			index &= 0x07
+			buf.WriteString(colors[index])
 		}
 		if w.noHeader {
-			header_size := int((uint(buffer[1]) << 24) |
-				(uint(buffer[2]) << 16) |
-				(uint(buffer[3]) << 8) |
-				uint(buffer[4]))
+			//header_size := int((uint(buffer[1]) << 24) |
+			//	(uint(buffer[2]) << 16) |
+			//	(uint(buffer[3]) << 8) |
+			//	uint(buffer[4]))
 			buf.Write(p[header_size:])
 		} else {
 			buf.Write(p)
@@ -156,7 +159,12 @@ func (w *Writer) Write(buffer []byte) (n int, err error) {
 		if !w.nocolor {
 			buf.WriteString(Reset)
 		}
-		w.out.Write(buf.Bytes())
+		if isCons == 0 {
+			w.out.Write(buf.Bytes())
+		} else {
+			w.out.Write(buf.Bytes()[:header_size+(50)])
+			w.out.Write([]byte{10, 13}) //回车换行
+		}
 	}
 	if w.file == nil {
 		if err1 := w.rotate(); err1 != nil {

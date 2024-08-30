@@ -28,6 +28,8 @@ func init() {
 	//glog.SetCons(true)
 	//glog.SetNoHeader(true)
 	//glog.SetNoColor(true)
+
+	glog.AddFlag(glog.BitMicroSeconds)
 }
 func getCallerInfo(skip int) (info string) {
 
@@ -49,7 +51,21 @@ func testlog() {
 	fmt.Println(getCallerInfo(1))
 }
 
+func test() {
+	//&两个位都是1，则结果位为1
+	//|两个位中至少有一个是1，则结果位为1
+	//^两个位相同，则结果位为0
+	var a byte = 3
+	fmt.Println(a)
+	a |= 0x08 //两个位相同，则结果位为0
+	b := a >> 2
+	fmt.Println(a, b)
+	a &= 0x07
+	fmt.Println(a)
+}
+
 func main() {
+	test()
 	glog.Println("hello glog...")
 	//glog.SetLogFile("/usr/local/AATEST/logs", "normal.log")
 	glog.Info("只有使用这个log打印才能记录日志哦", time.Now().Format("2006-01-02 15:04:05"))
@@ -63,6 +79,9 @@ func main() {
 	//	//glog.Debug("Debug。。。")
 	//	time.Sleep(5 * time.Second)
 	//}
-	fmt.Scanln()
+	glog.Error("wahahhawahahhawahahhawahahhawahahhawahahhawahahhawahahha")
+	glog.ErrorNoCon("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
+	glog.Debug("dece")
+	//fmt.Scanln()
 	os.Exit(0)
 }

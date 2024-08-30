@@ -147,7 +147,9 @@ func (log *GLoggerCore) formatHeader(t time.Time, file string, funcname string, 
 
 		// Log level flag is set
 		if log.flag&BitLevel != 0 {
-			buf.WriteString(levels[level])
+			le := level
+			le &= 0x07
+			buf.WriteString(levels[le])
 		}
 
 		// Short file name flag or long file name flag is set
@@ -215,9 +217,9 @@ func (log *GLoggerCore) OutPut(level int, s string) error {
 	log.buf.WriteByte(byte(level))
 	// write log header
 	headers := log.formatHeader(now, file, funcName, line, level)
-	length := uint32(len(headers))
-	headbuf := []byte{byte((length >> 24) & 0xFF), byte((length >> 16) & 0xFF), byte((length >> 8) & 0xFF), byte(length & 0xFF)}
-	log.buf.Write(headbuf)
+	length := byte(len(headers))
+	//headbuf := []byte{byte((length >> 24) & 0xFF), byte((length >> 16) & 0xFF), byte((length >> 8) & 0xFF), byte(length & 0xFF)}
+	log.buf.WriteByte(length)
 	log.buf.Write(headers)
 
 	// write log content
@@ -305,6 +307,15 @@ func (log *GLoggerCore) Error(v ...interface{}) {
 		return
 	}
 	_ = log.OutPut(LogError, fmt.Sprintln(v...))
+}
+
+func (log *GLoggerCore) ErrorNoCon(v ...interface{}) {
+	if log.verifyLogIsolation(LogError) {
+		return
+	}
+	level := LogError
+	level |= 0x09
+	_ = log.OutPut(level, fmt.Sprintln(v...))
 }
 
 func (log *GLoggerCore) Fatalf(format string, v ...interface{}) {

@@ -132,7 +132,9 @@ func Errorf(format string, v ...interface{}) {
 func Error(v ...interface{}) {
 	StdGLog.Error(v...)
 }
-
+func ErrorNoCon(v ...interface{}) {
+	StdGLog.ErrorNoCon(v...)
+}
 func Fatalf(format string, v ...interface{}) {
 	StdGLog.Fatalf(format, v...)
 }
