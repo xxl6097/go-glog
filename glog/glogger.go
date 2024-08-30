@@ -260,11 +260,29 @@ func (log *GLoggerCore) Debugf(format string, v ...interface{}) {
 	_ = log.OutPut(LogDebug, fmt.Sprintf(format, v...))
 }
 
+func (log *GLoggerCore) DebugfNoCon(format string, v ...interface{}) {
+	if log.verifyLogIsolation(LogDebug) {
+		return
+	}
+	level := LogDebug
+	level |= 0x08
+	_ = log.OutPut(level, fmt.Sprintf(format, v...))
+}
+
 func (log *GLoggerCore) Debug(v ...interface{}) {
 	if log.verifyLogIsolation(LogDebug) {
 		return
 	}
 	_ = log.OutPut(LogDebug, fmt.Sprintln(v...))
+}
+
+func (log *GLoggerCore) DebugNoCon(v ...interface{}) {
+	if log.verifyLogIsolation(LogDebug) {
+		return
+	}
+	level := LogDebug
+	level |= 0x08
+	_ = log.OutPut(level, fmt.Sprintln(v...))
 }
 
 func (log *GLoggerCore) Infof(format string, v ...interface{}) {
@@ -273,12 +291,28 @@ func (log *GLoggerCore) Infof(format string, v ...interface{}) {
 	}
 	_ = log.OutPut(LogInfo, fmt.Sprintf(format, v...))
 }
+func (log *GLoggerCore) InfofNoCon(format string, v ...interface{}) {
+	if log.verifyLogIsolation(LogInfo) {
+		return
+	}
+	level := LogInfo
+	level |= 0x08
+	_ = log.OutPut(level, fmt.Sprintf(format, v...))
+}
 
 func (log *GLoggerCore) Info(v ...interface{}) {
 	if log.verifyLogIsolation(LogInfo) {
 		return
 	}
 	_ = log.OutPut(LogInfo, fmt.Sprintln(v...))
+}
+func (log *GLoggerCore) InfoNoCon(v ...interface{}) {
+	if log.verifyLogIsolation(LogInfo) {
+		return
+	}
+	level := LogInfo
+	level |= 0x08
+	_ = log.OutPut(level, fmt.Sprintln(v...))
 }
 
 func (log *GLoggerCore) Warnf(format string, v ...interface{}) {
@@ -287,6 +321,14 @@ func (log *GLoggerCore) Warnf(format string, v ...interface{}) {
 	}
 	_ = log.OutPut(LogWarn, fmt.Sprintf(format, v...))
 }
+func (log *GLoggerCore) WarnfNoCon(format string, v ...interface{}) {
+	if log.verifyLogIsolation(LogWarn) {
+		return
+	}
+	level := LogWarn
+	level |= 0x08
+	_ = log.OutPut(level, fmt.Sprintf(format, v...))
+}
 
 func (log *GLoggerCore) Warn(v ...interface{}) {
 	if log.verifyLogIsolation(LogWarn) {
@@ -294,12 +336,28 @@ func (log *GLoggerCore) Warn(v ...interface{}) {
 	}
 	_ = log.OutPut(LogWarn, fmt.Sprintln(v...))
 }
+func (log *GLoggerCore) WarnNoCon(v ...interface{}) {
+	if log.verifyLogIsolation(LogWarn) {
+		return
+	}
+	level := LogWarn
+	level |= 0x08
+	_ = log.OutPut(level, fmt.Sprintln(v...))
+}
 
 func (log *GLoggerCore) Errorf(format string, v ...interface{}) {
 	if log.verifyLogIsolation(LogError) {
 		return
 	}
 	_ = log.OutPut(LogError, fmt.Sprintf(format, v...))
+}
+func (log *GLoggerCore) ErrorfNoCon(format string, v ...interface{}) {
+	if log.verifyLogIsolation(LogError) {
+		return
+	}
+	level := LogError
+	level |= 0x08
+	_ = log.OutPut(level, fmt.Sprintf(format, v...))
 }
 
 func (log *GLoggerCore) Error(v ...interface{}) {
@@ -314,7 +372,7 @@ func (log *GLoggerCore) ErrorNoCon(v ...interface{}) {
 		return
 	}
 	level := LogError
-	level |= 0x09
+	level |= 0x08
 	_ = log.OutPut(level, fmt.Sprintln(v...))
 }
 

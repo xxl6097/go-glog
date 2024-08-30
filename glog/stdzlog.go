@@ -85,12 +85,22 @@ func Debugf(format string, v ...interface{}) {
 	StdGLog.Debugf(format, v...)
 }
 
+func DebugfNoCon(format string, v ...interface{}) {
+	StdGLog.DebugfNoCon(format, v...)
+}
+
 func Debug(v ...interface{}) {
 	StdGLog.Debug(v...)
+}
+func DebugNoCon(v ...interface{}) {
+	StdGLog.DebugNoCon(v...)
 }
 
 func Println(a ...any) {
 	StdGLog.Info(a...)
+}
+func PrintlnNoCon(a ...any) {
+	StdGLog.InfoNoCon(a...)
 }
 
 func Flush() error {
@@ -104,31 +114,53 @@ func Sprintf(format string, a ...any) string {
 func Print(a ...any) {
 	StdGLog.Info(a...)
 }
+func PrintNoCon(a ...any) {
+	StdGLog.InfoNoCon(a...)
+}
 
 func Printf(format string, a ...any) {
 	StdGLog.Infof(format, a...)
+}
+func PrintfNoCon(format string, a ...any) {
+	StdGLog.InfofNoCon(format, a...)
 }
 
 func Infof(format string, v ...interface{}) {
 	StdGLog.Infof(format, v...)
 }
 
+func InfofNoCon(format string, v ...interface{}) {
+	StdGLog.InfofNoCon(format, v...)
+}
+
 func Info(v ...interface{}) {
 	StdGLog.Info(v...)
+}
+
+func InfoNoCon(v ...interface{}) {
+	StdGLog.InfoNoCon(v...)
 }
 
 func Warnf(format string, v ...interface{}) {
 	StdGLog.Warnf(format, v...)
 }
+func WarnfNoCon(format string, v ...interface{}) {
+	StdGLog.WarnfNoCon(format, v...)
+}
 
 func Warn(v ...interface{}) {
 	StdGLog.Warn(v...)
+}
+func WarnNoCon(v ...interface{}) {
+	StdGLog.WarnNoCon(v...)
 }
 
 func Errorf(format string, v ...interface{}) {
 	StdGLog.Errorf(format, v...)
 }
-
+func ErrorfNoCon(format string, v ...interface{}) {
+	StdGLog.ErrorfNoCon(format, v...)
+}
 func Error(v ...interface{}) {
 	StdGLog.Error(v...)
 }
